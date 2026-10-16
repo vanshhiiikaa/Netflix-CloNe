@@ -1,4 +1,4 @@
-
+/* Added horizontal rows (Netflix-like) and small layout tweaks */
 :root {
   --bg: #141414;
   --panel: #222;
@@ -188,55 +188,81 @@ a {
   margin-bottom: 20px;
 }
 
-.movie-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 22px 14px;
+/* New: Rows (horizontal sliding like Netflix) */
+.row {
+  margin-bottom: 28px;
 }
-
-.movie-card {
-  min-width: 0;
+.row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.row-title {
+  font-size: 18px;
+  margin: 0;
+}
+.row-container {
+  position: relative;
+}
+.row-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-behavior: smooth;
+}
+.row-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.row-card {
+  min-width: 160px;
   background: #202020;
   border-radius: 6px;
   overflow: hidden;
   transition: transform 180ms ease, box-shadow 180ms ease;
+  flex: 0 0 auto;
 }
-
-.movie-card:hover {
+.row-card:hover {
   transform: scale(1.035);
   box-shadow: 0 8px 24px #0009;
 }
-
-.poster {
+.row-card img {
   display: block;
   width: 100%;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   background: #333;
 }
-
-.movie-info {
-  padding: 12px;
+.row-card .movie-info {
+  padding: 9px;
 }
-
-.movie-info h3 {
-  margin: 0 0 7px;
-  font-size: 15px;
+.row-card .movie-info h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
 }
-
-.movie-meta {
+.row-card .movie-meta {
   color: var(--muted);
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
-
-.card-play {
-  width: 100%;
-  padding: 9px;
+.row-nav {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+.row-nav button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 0;
-  border-radius: 4px;
+  background: #1116;
   color: white;
-  background: var(--red);
 }
 
 .empty-state {
@@ -366,9 +392,12 @@ footer {
     padding: 24px 4%;
   }
 
-  .movie-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 10px;
+  .row-card {
+    min-width: 140px;
+  }
+
+  .row-scroll {
+    gap: 10px;
   }
 
   .movie-info {
@@ -377,219 +406,5 @@ footer {
 
   .movie-info h3 {
     font-size: 14px;
-  }
-}
-
-/* ===== NETFLIX-STYLE MOVIE CAROUSELS ===== */
-
-.movie-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  min-width: 0;
-}
-
-.movie-row {
-  min-width: 0;
-}
-
-.row-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.row-heading h3 {
-  margin: 0;
-  font-size: 21px;
-  font-weight: 700;
-}
-
-.row-count {
-  color: #aaa;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-/* Scroll area and arrow controls */
-
-.carousel-shell {
-  position: relative;
-  min-width: 0;
-}
-
-.carousel-track {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 8px 4px 16px;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-}
-
-.carousel-track::-webkit-scrollbar {
-  display: none;
-}
-
-/* Each card has a consistent responsive width */
-
-.carousel-track .movie-card {
-  flex: 0 0 calc((100% - 56px) / 5);
-  min-width: 0;
-  scroll-snap-align: start;
-  border-radius: 6px;
-  background: #222;
-}
-
-.carousel-track .poster {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  display: block;
-}
-
-.carousel-track .movie-info {
-  padding: 10px;
-}
-
-.carousel-track .movie-info h3 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Left and right buttons */
-
-.carousel-arrow {
-  position: absolute;
-  z-index: 3;
-  top: 35%;
-  transform: translateY(-35%);
-  width: 42px;
-  height: 76px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 5px;
-  color: #fff;
-  background: rgba(15, 15, 15, 0.82);
-  font-size: 32px;
-  line-height: 1;
-  transition: background 160ms ease, opacity 160ms ease;
-}
-
-.carousel-arrow:hover:not(:disabled) {
-  background: rgba(30, 30, 30, 0.98);
-}
-
-.carousel-arrow:disabled {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.carousel-arrow.left {
-  left: 0;
-}
-
-.carousel-arrow.right {
-  right: 0;
-}
-
-.carousel-arrow:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
-}
-
-.movie-card {
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-@media (hover: hover) {
-  .carousel-track .movie-card:hover {
-    transform: scale(1.035);
-    box-shadow: 0 8px 24px #0009;
-  }
-}
-
-.empty-state {
-  padding: 30px 4px;
-}
-
-/* Tablet */
-
-@media (max-width: 900px) {
-  .carousel-track .movie-card {
-    flex-basis: calc((100% - 42px) / 4);
-  }
-
-  .carousel-arrow {
-    width: 36px;
-    height: 64px;
-  }
-}
-
-/* Mobile */
-
-@media (max-width: 600px) {
-  .movie-rows {
-    gap: 24px;
-  }
-
-  .row-heading h3 {
-    font-size: 18px;
-  }
-
-  .carousel-track {
-    gap: 10px;
-    padding: 6px 2px 12px;
-    scroll-snap-type: x mandatory;
-  }
-
-  .carousel-track .movie-card {
-    flex-basis: 43%;
-  }
-
-  .carousel-track .movie-info {
-    padding: 8px;
-  }
-
-  .carousel-track .movie-info h3 {
-    font-size: 13px;
-  }
-
-  .carousel-track .movie-meta {
-    font-size: 11px;
-  }
-
-  .carousel-arrow {
-    width: 30px;
-    height: 52px;
-    font-size: 25px;
-  }
-}
-
-/* Small phones */
-
-@media (max-width: 360px) {
-  .carousel-track .movie-card {
-    flex-basis: 68%;
-  }
-}
-
-/* Respect accessibility settings */
-
-@media (prefers-reduced-motion: reduce) {
-  .carousel-track {
-    scroll-behavior: auto;
-  }
-
-  .carousel-track .movie-card {
-    transition: none;
   }
 }
