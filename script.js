@@ -89,43 +89,169 @@ const playerDescription = document.getElementById("playerDescription");
 const featuredMovie = movies[0];
 
 // Render movie cards
+
 function renderMovies(list) {
   movieGrid.replaceChildren();
 
   emptyState.hidden = list.length > 0;
 
-  list.forEach((movie) => {
-    const card = document.createElement("article");
-    card.className = "movie-card";
+  if (list.length === 0) return;
 
-    const poster = document.createElement("img");
-    poster.className = "poster";
-    poster.src = movie.poster;
-    poster.alt = movie.title + " poster";
-    poster.loading = "lazy";
+  const query = searchInput.value.trim();
 
-    poster.addEventListener("error", () => {
-      poster.style.display = "none";
-    }, { once: true });
+  // Search results ko ek hi horizontal row mein dikhayein.
+  const rows = query
+    ? [{ title: "Search Results", movies: list }]
+    : [
+        { title: "Trending Now", movies: list },
+        ...[...new Set(list.map(movie => movie.genre))]
+          .map(genre => ({
+            title: genre + " Movies",
+            movies: list.filter(movie => movie.genre === genre)
+          }))
+      ];
 
-    const info = document.createElement("div");
-    info.className = "movie-info";
+  rows.forEach((row, rowIndex) => {
+    if (!row.movies.length) return;
+
+    const section = document.createElement("section");
+    section.className = "movie-row";
+
+    const heading = document.createElement("div");
+    heading.className = "row-heading";
 
     const title = document.createElement("h3");
-    title.textContent = movie.title;
+    title.textContent = row.title;
 
-    const meta = document.createElement("div");
-    meta.className = "movie-meta";
-    meta.textContent = `${movie.year} • ${movie.genre}`;
+    const count = document.createElement("span");
+    count.className = "row-count";
+    count.textContent = `${row.movies.length} titles`;
 
-    const playButton = document.createElement("button");
-    playButton.className = "card-play";
-    playButton.textContent = "▶ Play";
-    playButton.setAttribute("aria-label", `Play ${movie.title}`);
-    playButton.addEventListener("click", () => openPlayer(movie));
+    heading.append(title, count);
 
-    info.append(title, meta, playButton);
-    card.append(poster, info);
+    const shell = document.createElement("div");
+    shell.className = "carousel-shell";
+
+    const track = document.createElement("div");
+    track.className = "carousel-track";
+    track.id = `carousel-${rowIndex}`;
+    track.setAttribute("aria-label", row.title);
+    track.setAttribute("tabindex", "0");
+
+    const leftButton = document.createElement("button");
+    leftButton.className = "carousel-arrow left";
+    leftButton.type = "button";
+    leftButton.textContent = "‹";
+    leftButton.setAttribute("aria-label", `Scroll ${row.title} left`);
+
+    const rightButton = document.createElement("button");
+    rightButton.className = "carousel-arrow right";
+    rightButton.type = "button";
+    rightButton.textContent = "›";
+    rightButton.setAttribute("aria-label", `Scroll ${row.title} right`);
+
+    // Create cards from the existing movie data.
+    row.movies.forEach(movie => {
+      const card = document.createElement("article");
+      card.className = "movie-card";
+
+      const poster = document.createElement("img");
+      poster.className = "poster";
+      poster.src = movie.poster;
+      poster.alt = movie.title + " poster";
+      poster.loading = "lazy";
+
+      poster.addEventListener("error", () => {
+        poster.style.display = "none";
+      }, { once: true });
+
+      const info = document.createElement("div");
+      info.className = "movie-info";
+
+      const name = document.createElement("h3");
+      name.textContent = movie.title;
+
+      const meta = document.createElement("div");
+      meta.className = "movie-meta";
+      meta.textContent = `${movie.year} • ${movie.genre}`;
+
+      const play = document.createElement("button");
+      play.className = "card-play";
+      play.type = "button";
+      play.textContent = "▶ Play";
+      play.setAttribute("aria-label", `Play ${movie.title}`);
+      play.addEventListener("click", () => openPlayer(movie));
+
+      info.append(name, meta, play);
+      card.append(poster, info);
+
+      card.addEventListener("click", event => {
+        if (!event.target.closest("button")) {
+          openPlayer(movie);
+        }
+      });
+
+      track.appendChild(card);
+    });
+
+    // Scroll by approximately one card group.
+    function scrollCarousel(direction) {
+      const card = track.querySelector(".movie-card");
+      if (!card) return;
+
+      const trackStyle = getComputedStyle(track);
+      const gap = parseFloat(trackStyle.columnGap) || 0;
+      const distance = (card.getBoundingClientRect().width + gap) * 3;
+
+      track.scrollBy({
+        left: direction * distance,
+        behavior: window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches ? "auto" : "smooth"
+      });
+    }
+
+    leftButton.addEventListener("click", () => {
+      scrollCarousel(-1);
+    });
+
+    rightButton.addEventListener("click", () => {
+      scrollCarousel(1);
+    });
+
+    // Update arrow states at the start and end.
+    function updateArrows() {
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      leftButton.disabled = track.scrollLeft <= 2;
+      rightButton.disabled = track.scrollLeft >= maxScroll - 2;
+    }
+
+    track.addEventListener("scroll", updateArrows, {
+      passive: true
+    });
+
+    // Support mouse wheel and keyboard arrow navigation.
+    track.addEventListener("keydown", event => {
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        scrollCarousel(1);
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        scrollCarousel(-1);
+      }
+    });
+
+    shell.append(leftButton, track, rightButton);
+    section.append(heading, shell);
+    movieGrid.appendChild(section);
+
+    // Wait until layout is calculated before setting arrow states.
+    requestAnimationFrame(updateArrows);
+  });
+}
+
 
     // Clicking the card opens the player too.
     card.addEventListener("click", (event) => {
