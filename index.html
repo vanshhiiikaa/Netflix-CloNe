@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#141414" />
+  <title>StreamFlix | Movie Streaming</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <a href="#" class="logo">STREAMFLIX</a>
+
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#trending">Trending</a>
+      <a href="#movies">Movies</a>
+    </nav>
+
+    <div class="nav-actions">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search movies..."
+        aria-label="Search movies"
+      />
+      <button id="searchBtn" class="search-btn">Search</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <span class="tag">#1 IN DEMO TODAY</span>
+        <h1 id="heroTitle">The Last Horizon</h1>
+        <p id="heroDescription">
+          A thrilling journey beyond the edge of the known world.
+        </p>
+
+        <div class="hero-buttons">
+          <button id="heroPlay" class="btn btn-light">
+            ▶ Play
+          </button>
+          <button id="heroInfo" class="btn btn-dark">
+            ⓘ More Info
+          </button>
+        </div>
+      </div>
+      <div class="hero-shade"></div>
+    </section>
+
+    <section class="catalog">
+      <div class="section-heading">
+        <h2 id="resultsTitle">Trending Now</h2>
+        <button id="clearSearch" class="clear-btn" hidden>
+          Clear search ✕
+        </button>
+      </div>
+
+      <div id="movieGrid" class="movie-grid"></div>
+      <p id="emptyState" class="empty-state" hidden>
+        No movies found. Try another title.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    StreamFlix — A fan-made streaming UI demo.
+    Not affiliated with Netflix.
+  </footer>
+
+  <div
+    id="playerModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Movie player"
+    hidden
+  >
+    <div class="player-panel">
+      <button id="closePlayer" class="close-btn"
+        aria-label="Close player">✕</button>
+
+      <video id="videoPlayer" controls playsinline>
+        Your browser does not support HTML video.
+      </video>
+
+      <div class="player-details">
+        <h2 id="playerTitle">Movie title</h2>
+        <p id="playerDescription"></p>
+        <p class="demo-note">
+          Demo player. Sample video availability depends on the host.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Keep the app usable if the script is loaded twice.
+    // The main application is implemented in script.js.
+  </script>
+</body>
+</html>
